@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { createServer } from "./server.js";
 
 // stdio transport — for local MCP clients (Claude Desktop, opencode, etc.)
