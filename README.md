@@ -12,10 +12,10 @@ outbound engine.
 ```bash
 npm install
 cp .env.example .env   # set CALLREMIND_API_URL + CALLREMIND_API_KEY
-npm start
+npm start              # stdio transport (local MCP clients)
 ```
 
-Run via MCP client:
+### stdio (local clients: Claude Desktop, opencode, etc.)
 
 ```json
 {
@@ -30,6 +30,18 @@ Run via MCP client:
   }
 }
 ```
+
+### HTTP Stream / SSE (remote clients: ChatGPT, etc.)
+
+```bash
+npm run start:sse            # listens on http://0.0.0.0:8921/mcp
+# or
+CALLREMIND_MCP_PORT=8921 CALLREMIND_API_KEY=your_key node index-sse.js
+```
+
+Connect your MCP client to `http://<host>:8921/mcp`. Configurable env:
+`CALLREMIND_MCP_PORT` (default 8921), `CALLREMIND_MCP_HOST` (default 0.0.0.0),
+`CALLREMIND_MCP_ENDPOINT` (default /mcp).
 
 Or build the Docker image:
 

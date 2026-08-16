@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node test-api.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "start:sse": "node index-sse.js"
   },
   "keywords": ["mcp", "callremind", "avr", "outbound-call"],
   "author": "CallRemind",
