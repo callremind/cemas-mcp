@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CallRemind MCP Server</title>
+  <meta name="description" content="MCP server for the CallRemind REST API — instant calls, CEMAS notifications, Edge TTS voices, agents, leads, schedules, and more." />
+  <style>
+    :root {
+      --brand: oklch(0.62 0.16 52);
+      --brand-strong: oklch(0.5 0.18 45);
+      --ink: oklch(0.25 0.02 60);
+      --muted: oklch(0.5 0.02 60);
+      --bg: oklch(0.98 0.003 60);
+      --surface: #fff;
+      --line: oklch(0.9 0.01 60);
+      --code-bg: oklch(0.96 0.005 60);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header.hero {
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: #fff; border-radius: var(--radius); padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    header.hero h1 { margin: 0 0 .4rem; font-size: 1.9rem; }
+    header.hero p { margin: 0; opacity: .92; max-width: 60ch; }
+    .badges { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .badge {
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
+      padding: .25rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    h2 { font-size: 1.25rem; margin: 0 0 .75rem; }
+    h3 { font-size: 1.05rem; margin: 1.25rem 0 .5rem; }
+    p { margin: .5rem 0; }
+    a { color: var(--brand-strong); }
+    code, pre {
+      font-family: "Cascadia Code", Consolas, monospace; font-size: .85rem;
+    }
+    code { background: var(--code-bg); padding: .1rem .35rem; border-radius: 5px; }
+    pre {
+      background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto;
+      border: 1px solid var(--line);
+    }
+    pre code { background: none; padding: 0; }
+    .endpoint {
+      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+      background: var(--code-bg); border: 1px dashed var(--brand);
+      border-radius: 8px; padding: .75rem 1rem; margin: .75rem 0;
+    }
+    .endpoint code { background: none; font-size: 1rem; }
+    .copy-btn {
+      margin-left: auto; cursor: pointer; border: 1px solid var(--line);
+      background: #fff; border-radius: 6px; padding: .3rem .6rem; font-size: .8rem;
+    }
+    .copy-btn:hover { border-color: var(--brand); color: var(--brand-strong); }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; }
+    .tool { white-space: nowrap; }
+    .muted { color: var(--muted); }
+    ul { margin: .5rem 0; padding-left: 1.2rem; }
+    .foot { margin-top: 2rem; text-align: center; color: var(--muted); font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>CallRemind MCP Server</h1>
+      <p>An MCP (Model Context Protocol) server that lets AI agents interact with the CallRemind REST API — place instant calls, manage CEMAS emergency notifications, pick Edge TTS voices, and manage agents, leads, and scheduled calls.</p>
+      <div class="badges">
+        <span class="badge">📦 callremind-mcp</span>
+        <span class="badge">🚀 HTTP Stream (SSE)</span>
+        <span class="badge">🔌 20 tools</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Connect an AI client</h2>
+      <p class="muted">Use this endpoint with ChatGPT or any MCP-over-HTTP client:</p>
+      <div class="endpoint">
+        <code>http://mcp.callremind.my/mcp</code>
+        <button class="copy-btn" onclick="copyText('http://mcp.callremind.my/mcp')">Copy</button>
+      </div>
+      <p class="muted">Local clients (Claude Desktop, opencode, Codex, Cursor) can use the npm package instead: <code>npx -y callremind-mcp</code></p>
+      <p><a href="https://www.npmjs.com/package/callremind-mcp" target="_blank" rel="noopener noreferrer">View package on npm</a> · <a href="https://github.com/callremind/cemas-mcp" target="_blank" rel="noopener noreferrer">View source on GitHub</a></p>
+    </section>
+
+    <section class="card">
+      <h2>Quick start (npm)</h2>
+      <p>Install and run the server locally:</p>
+      <pre><code>npm install -g callremind-mcp
+CALLREMIND_API_KEY=your_key callremind-mcp</code></pre>
+      <p class="muted">Set your CallRemind API key via the <code>CALLREMIND_API_KEY</code> env var.</p>
+    </section>
+
+    <section class="card">
+      <h2>Client setup</h2>
+      <h3>Claude Desktop</h3>
+      <pre><code>{
+  "mcpServers": {
+    "callremind": {
+      "command": "npx",
+      "args": ["-y", "callremind-mcp"],
+      "env": { "CALLREMIND_API_KEY": "your_key" }
+    }
+  }
+}</code></pre>
+      <h3>Claude Code</h3>
+      <pre><code>claude mcp add callremind -- npx -y callremind-mcp</code></pre>
+      <h3>opencode</h3>
+      <pre><code>{
+  "mcp": {
+    "callremind": {
+      "type": "local",
+      "command": ["npx", "-y", "callremind-mcp"],
+      "environment": { "CALLREMIND_API_KEY": "your_key" },
+      "enabled": true
+    }
+  }
+}</code></pre>
+      <h3>ChatGPT (remote)</h3>
+      <p class="muted">Add a custom MCP server with the endpoint <code>http://mcp.callremind.my/mcp</code></p>
+      <p class="muted">Full setup instructions for Claude, Codex, Cursor and more: <a href="https://github.com/callremind/cemas-mcp" target="_blank" rel="noopener noreferrer">see the README on GitHub</a>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Tools</h2>
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="tool"><code>makeInstantCall</code></td><td>Immediate outbound AI call</td></tr>
+          <tr><td class="tool"><code>getCemasConfig</code></td><td>CEMAS config + voice prefs</td></tr>
+          <tr><td class="tool"><code>saveCemasConfig</code></td><td>Save destination + voice/prosody</td></tr>
+          <tr><td class="tool"><code>listEdgeVoices</code></td><td>List Edge TTS voices</td></tr>
+          <tr><td class="tool"><code>previewEdgeVoice</code></td><td>Synthesize voice preview</td></tr>
+          <tr><td class="tool"><code>listVoiceClones</code> / <code>createVoiceClone</code></td><td>Manage voice clones</td></tr>
+          <tr><td class="tool"><code>listAgents</code> / <code>createAgent</code> / <code>updateAgent</code></td><td>Manage AI agents</td></tr>
+          <tr><td class="tool"><code>listLeads</code> / <code>createLead</code></td><td>Manage contacts / leads</td></tr>
+          <tr><td class="tool"><code>listScheduledCalls</code> / <code>createScheduledCall</code></td><td>Schedule calls</td></tr>
+          <tr><td class="tool"><code>listCallLogs</code></td><td>Call history</td></tr>
+          <tr><td class="tool"><code>getReports</code></td><td>Call analytics</td></tr>
+          <tr><td class="tool"><code>getProfile</code> / <code>updateProfile</code></td><td>Profile management</td></tr>
+          <tr><td class="tool"><code>listWebhookConfigurations</code> / <code>upsertWebhookConfiguration</code></td><td>Webhooks</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Configuration</h2>
+      <table>
+        <thead><tr><th>Env var</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>CALLREMIND_API_URL</code></td><td><code>https://api.callremind.my/v1</code></td><td>CallRemind REST API base</td></tr>
+          <tr><td><code>CALLREMIND_API_KEY</code></td><td>—</td><td>Your <code>x-api-key</code> (required)</td></tr>
+          <tr><td><code>CALLREMIND_MCP_PORT</code></td><td><code>8921</code></td><td>HTTP/SSE port</td></tr>
+          <tr><td><code>CALLREMIND_MCP_HOST</code></td><td><code>0.0.0.0</code></td><td>HTTP/SSE bind host</td></tr>
+          <tr><td><code>CALLREMIND_MCP_ENDPOINT</code></td><td><code>/mcp</code></td><td>HTTP/SSE endpoint path</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="foot">
+      <p>CallRemind MCP · <a href="https://callremind.my" target="_blank" rel="noopener noreferrer">callremind.my</a></p>
+    </div>
+  </div>
+
+  <script>
+    function copyText(t) {
+      navigator.clipboard.writeText(t).then(() => {
+        const btns = document.querySelectorAll('.copy-btn');
+        btns.forEach(b => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1500); });
+      });
+    }
+  </script>
+</body>
+</html>

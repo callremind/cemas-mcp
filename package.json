@@ -30,6 +30,7 @@
                   "index.js",
                   "index-sse.js",
                   "server.js",
+                  "index.html",
                   "README.md"
               ],
     "repository":  {
