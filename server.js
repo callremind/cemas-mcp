@@ -371,6 +371,65 @@ mcp.addTool({
     },
 });
 
+// --- Account activation / auth (pre-auth: no x-api-key required) ---
+// These endpoints create/validate/login before a user has an API key, so they
+// use a bare axios client (no x-api-key header).
+const authClient2 = axios.create({
+    baseURL: BASE_URL,
+    headers: { "Content-Type": "application/json" },
+});
+
+mcp.addTool({
+    name: "createNewUser",
+    description: "Request an account-activation code by email. Does NOT create the account; emails the user an OTP + code ref (call validateNewUser to finish).",
+    parameters: z.object({
+        email: z.string().describe("Recipient email to activate"),
+        name: z.string().optional().describe("Optional display name"),
+        phone: z.string().optional(),
+    }),
+    execute: async (args) => {
+        const response = await authClient2.post("/auth/create-new-user", args);
+        return toText(response.data);
+    },
+});
+
+mcp.addTool({
+    name: "validateNewUser",
+    description: "Validate the emailed OTP + code ref and fully create the account. Optionally set a password so the user can log in. Returns the new API key.",
+    parameters: z.object({
+        ref: z.string().describe("8-char code reference from the email"),
+        otp: z.string().describe("6-digit OTP from the email"),
+        password: z.string().optional().describe("Optional password (min 6 chars) so the user can log in"),
+    }),
+    execute: async (args) => {
+        const response = await authClient2.get("/auth/validate-new-user", { params: args });
+        return toText(response.data);
+    },
+});
+
+mcp.addTool({
+    name: "loginUser",
+    description: "Sign in with email + password and get the app API key + session. Use logoutUser to sign out.",
+    parameters: z.object({
+        email: z.string().describe("Account email"),
+        password: z.string().describe("Account password"),
+    }),
+    execute: async (args) => {
+        const response = await authClient2.post("/auth/login-user", args);
+        return toText(response.data);
+    },
+});
+
+mcp.addTool({
+    name: "logoutUser",
+    description: "Sign out the current session (stateless). Clears the caller's stored key.",
+    parameters: z.object({}),
+    execute: async () => {
+        const response = await authClient2.post("/auth/logout-user", {});
+        return toText(response.data);
+    },
+});
+
 
     return mcp;
 }
