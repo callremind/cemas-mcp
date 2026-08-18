@@ -1,7 +1,6 @@
 import { FastMCP } from "fastmcp";
 import axios from "axios";
 import { z } from "zod";
-
 // --- SILENCE STDOUT ---
 // MCP uses stdout for communication. Any other output will break the protocol.
 const originalLog = console.log;
@@ -33,8 +32,12 @@ if (!API_KEY) {
 }
 // ----------------------
 
-export function createServer(name = "CallRemind MCP Server") {
-    const mcp = new FastMCP(name);
+export function createServer(name = "CallRemind MCP Server", opts = {}) {
+    const mcp = new FastMCP({
+        name,
+        version: "1.0.0",
+        ...(opts.auth ? { auth: opts.auth } : {}),
+    });
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
