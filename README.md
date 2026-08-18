@@ -130,20 +130,21 @@ CALLREMIND_API_KEY=your_key codex
 
 ### ChatGPT (remote, HTTP/SSE)
 
-Run the SSE server somewhere reachable, then point ChatGPT at it:
-
-```bash
-CALLREMIND_API_KEY=your_key CALLREMIND_MCP_PORT=8921 node index-sse.js
-```
-
-In ChatGPT, add a custom MCP server with URL:
+This server uses **OAuth 2.0 (GitHub)** for authentication (required by ChatGPT).
+Run the server with `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` set, then in
+ChatGPT add a custom MCP server with URL:
 
 ```
-http://<your-host>:8921/mcp
+https://mcp.callremind.my/mcp
 ```
 
-The server speaks the **Streamable HTTP** transport (the modern MCP HTTP/SSE
-protocol), so any MCP-over-HTTP client can connect.
+ChatGPT will discover OAuth (via `/.well-known/oauth-protected-resource`),
+redirect you to GitHub to authorize, then connect. The GitHub OAuth App's
+**Authorization callback URL** must be:
+
+```
+https://mcp.callremind.my/oauth/callback
+```
 
 ### opencode
 
