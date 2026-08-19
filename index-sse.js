@@ -43,7 +43,26 @@ function buildAuth() {
 }
 
 const auth = buildAuth();
-const mcp = createServer("CallRemind MCP Server (HTTP)", { auth });
+
+// Build the oauth config from the provider, but drop the dynamic-client
+// registration endpoint: FastMCP advertises /oauth/register yet doesn't mount
+// it reliably, causing ChatGPT's "registration endpoint returned 404". Removing
+// it makes clients fall back to static client registration.
+function buildOAuthConfig(provider) {
+  const o = provider.getOAuthConfig();
+  if (o?.authorizationServer?.registrationEndpoint) {
+    delete o.authorizationServer.registrationEndpoint;
+  }
+  return o;
+}
+
+const mcp = createServer("CallRemind MCP Server (HTTP)", {
+  ...(auth
+    ? {
+        oauth: buildOAuthConfig(auth),
+      }
+    : {}),
+});
 
 await mcp.start({
   transportType: "httpStream",

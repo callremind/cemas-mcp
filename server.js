@@ -37,6 +37,9 @@ export function createServer(name = "CallRemind MCP Server", opts = {}) {
         name,
         version: "1.0.0",
         ...(opts.auth ? { auth: opts.auth } : {}),
+        // oauth config (enabled + proxy + metadata) wires the /oauth/* and
+        // .well-known DCR endpoints required for ChatGPT / remote OAuth clients.
+        ...(opts.oauth ? { oauth: opts.oauth } : {}),
     });
 
 const apiClient = axios.create({
