@@ -1,6 +1,6 @@
 {
     "name": "callremind-mcp",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "CallRemind MCP server - AI agent integration for outbound calls, leads, agents, and CEMAS notifications.",
     "main": "index.js",
     "scripts": {
